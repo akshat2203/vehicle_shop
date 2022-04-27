@@ -1,0 +1,17 @@
+{% autoescape off %}
+Vehicle details
+vehicle name - {{obj.make}}
+vehicle model - {{obj.modal}}
+vehicle year - {{ obj.year }}
+vehicle condition - {{ obj.condition }}
+
+Seller details :
+seller name - {{ obj.seller.get_full_name }}
+sale price - {{ obj.price }}
+
+name of the interested party - {{ obj.buyer.get_full_name }}
+mobile number of the interested party - {{ obj.buyer.mobile }}
+commission - {{ obj.price }}
+net amount - {{ obj.price }}
+
+{% endautoescape %}
