@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'car',
     'crispy_forms',
-    'django_celery_results'
+    'django_celery_results',
+    'el_pagination',
 ]
 
 MIDDLEWARE = [
@@ -118,7 +119,7 @@ STATIC_URL = '/static/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-LOGIN_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "car_list"
 
 AUTH_USER_MODEL = 'car.User'
 

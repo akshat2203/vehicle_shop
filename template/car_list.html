@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load crispy_forms_tags %}
+{% load el_pagination_tags %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +10,7 @@
 <body>
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Navbar</a>
+  <a class="navbar-brand" href="#">vehicle_shop</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -17,55 +18,99 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="{% url 'home' %}">Home</a>
+        <a class="nav-link" href="{% url 'car_list' %}">Home</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="{% url 'car_list' %}">List Car</a>
+        <a class="nav-link" href="{% url 'add' %}">List Car</a>
       </li>
-
     </ul>
-      <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ml-auto">
       {% if not request.user.is_authenticated %}
-      <li class="nav-item">
-        <a href="{%url 'login'%}" class="btn btn-warning">Login</a>
-      </li>
+        <li class="nav-item">
+          <a href="{%url 'login'%}" class="btn btn-warning">Login</a>
+        </li>
       {% else %}
         <li class="nav-item active">
-        <p class="nav-link mb-0">Hello, {{ request.user }} </p>
-      </li>
+          <p class="nav-link mb-0">Hello, {{ request.user }} </p>
+        </li>
         <li class="nav-item">
-        <a href="{%url 'logout'%}" class="btn btn-danger">Logout</a>
-      </li>
+          <a href="{%url 'logout'%}" class="btn btn-danger">Logout</a>
+        </li>
       {% endif %}
-      </ul>
+    </ul>
 
   </div>
 </nav>
 </header>
 
-<a href="{% url 'add' %}">Add Car</a>
+<div class="container">
+<div class="row">
 
+<div class="col-md-3">
+
+<h1>filter</h1>
 <form method="get">
   {% csrf_token %}
-  <input type="text" name="make">
-  <input type="date" name="year">
-  <input type="checkbox" name="clear">
-  <button type="submit">filter</button>
+  <div class="form-group">
+    <label for="name">Make:</label>
+    <input type="text" class="form-control" placeholder="Enter Make" id="name" name="make">
+  </div>
+  <div class="form-group">
+    <label for="date">Date and Year:</label>
+    <input type="date" class="form-control" placeholder="Enter Date" id="date" name="year">
+  </div>
+  <div class="form-group form-check">
+    <label class="form-check-label">
+      <input class="form-check-input" type="checkbox" name="clear"> Click To Clear Filter
+    </label>
+  </div>
+  <button type="submit" class="btn btn-primary">save</button>
 </form>
 
 
-{% for car in cars %}
+</div>
 
-<p>model : {{ car.modal }}</p>
-<p>name : {{ car.make }}</p>
-<p>condition : {{ car.condition }}</p>
-<p>price : {{ car.price }}</p>
-<p>description : {{ car.description }}</p>
-<p>year : {{ car.year }}</p>
-<p>seller name : {{ car.seller.username }}</p>
-<a href="{% url 'car_details' car.pk %}">details</a>
+
+<div class="col-md-9">
+<h1>Select Your Choices</h1>
+{% paginate 3 entry_list %}
+
+{% for entry in entry_list %}
+  <div class="card bg-light mb-3">
+      <div class="card-body text-center">
+        <div class="car-details d-flex" style="flex-wrap:wrap;">
+          <div class="col-md-4"><p><b>model : </b>{{ entry.modal }}</p></div>
+          <div class="col-md-4"><p><b>make : </b>{{ entry.make }}</p></div>
+          <div class="col-md-4"><p><b>condition : </b>{{ entry.condition }}</p></div>
+          <div class="col-md-4"><p><b>price : </b>{{ entry.price }}</p></div>
+          <div class="col-md-4"><p><b>description : </b>{{ entry.description }}</p></div>
+          <div class="col-md-4"><p><b>year : </b>{{ entry.year }}</p></div>
+          <div class="col-md-4"><p><b>seller name : </b>{{ entry.seller.username }}</p></div>
+          <div class="col-md-4"><a href="{% url 'car_details' entry.pk %}" class="btn btn-success">Show Details</a></div>
+          {% if entry.is_sold %}
+          <div class="col-md-4"><button class="btn btn-warning">Sold</button></div>
+            {% if request.user.is_superuser %}
+            <div class="col-md-4">
+              <form method="get">
+                {% csrf_token %}
+                <input type="text" value="{{entry.id}}" name="car_id" hidden>
+                <button type="submit" class="btn btn-warning">Make Available</button>
+              </form>
+            </div>
+            {% endif %}
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
 {% endfor %}
 
+
+{% get_pages %}
+{{ pages.get_rendered }}
+</div>
+</div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>

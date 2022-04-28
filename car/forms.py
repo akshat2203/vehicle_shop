@@ -22,10 +22,8 @@ class AddCarForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(AddCarForm, self).clean()
         price = int(cleaned_data.get("price"))
-        price_range = range(1000, 100001)
 
         if price not in range(1000, 100001):
-            print("======= in ")
             self.add_error('price', 'Enter valid price')
 
         return cleaned_data
